@@ -24,7 +24,7 @@ export class User {
 
   @Prop({
     type: String,
-    required: function (this: any) {
+    required: function (this: User) {
       return this.provider === Provider.SYSTEM;
     },
   })
@@ -54,6 +54,12 @@ export class User {
     default: [],
   })
   coverPics: string[];
+
+  @Prop({
+    type: [String],
+    default: [],
+  })
+  files: string[];
 
   @Prop({
     type: String,
