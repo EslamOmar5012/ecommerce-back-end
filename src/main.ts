@@ -19,27 +19,16 @@ async function bootstrap() {
     'http://127.0.0.1:5173',
   ];
 
-  app.use((req, res, next) => {
-    const origin = req.headers.origin;
-
-    if (typeof origin === 'string' && allowedOrigins.includes(origin)) {
-      res.header('Access-Control-Allow-Origin', origin);
-      res.header('Access-Control-Allow-Credentials', 'true');
-      res.header('Vary', 'Origin');
-    }
-
-    if (req.method === 'OPTIONS') {
-      res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With');
-      res.sendStatus(204);
-      return;
-    }
-
-    next();
-  });
-
+  // Use only app.enableCors() - REMOVED the custom middleware
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
@@ -77,7 +66,9 @@ async function bootstrap() {
   try {
     await app.listen(requestedPort, host);
     console.log(`🚀 Server running on port ${requestedPort}`);
-    console.log(`📚 Swagger Documentation at http://localhost:${requestedPort}/api/docs`);
+    console.log(
+      `📚 Swagger Documentation at http://localhost:${requestedPort}/api/docs`,
+    );
   } catch (error: any) {
     if (error?.code === 'EADDRINUSE') {
       console.warn(
@@ -85,7 +76,9 @@ async function bootstrap() {
       );
       await app.listen(fallbackPort, host);
       console.log(`🚀 Server running on port ${fallbackPort}`);
-      console.log(`📚 Swagger Documentation at http://localhost:${fallbackPort}/api/docs`);
+      console.log(
+        `📚 Swagger Documentation at http://localhost:${fallbackPort}/api/docs`,
+      );
     } else {
       throw error;
     }
