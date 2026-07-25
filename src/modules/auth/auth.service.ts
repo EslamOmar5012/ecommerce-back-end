@@ -83,6 +83,14 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
+    if (!user.isEmailConfirmed) {
+      throw new UnauthorizedException({
+        message: 'Email not verified. Please enter the OTP sent to your email first.',
+        error: 'EmailNotVerified',
+        requiresVerification: true,
+      });
+    }
+
     const payload = {
       sub: user._id.toString(),
       email: user.email,
