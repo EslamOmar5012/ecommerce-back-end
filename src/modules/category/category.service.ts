@@ -5,7 +5,10 @@ import {
 } from '@nestjs/common';
 import { CategoryRepository } from '../../repo/category.repo';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import type { CreateCategoryDto, UpdateCategoryDto } from './category.validation';
+import type {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from './category.validation';
 import slugify from 'slugify';
 
 @Injectable()

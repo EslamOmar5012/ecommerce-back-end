@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { Role, Provider, Gender } from '../common/enums/user.enum';
 
 export type UserDocument = HydratedDocument<User>;
@@ -104,6 +104,12 @@ export class User {
     default: null,
   })
   deletedAt?: Date;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+    default: [],
+  })
+  wishlist: mongoose.Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

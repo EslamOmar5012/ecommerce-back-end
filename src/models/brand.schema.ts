@@ -60,6 +60,6 @@ export const BrandSchema = SchemaFactory.createForClass(Brand);
 // Auto-generate slug from name before saving
 BrandSchema.pre('save', function () {
   if (this.isModified('name') || this.isNew) {
-    this.slug = slugify(this.name as string, { lower: true });
+    this.slug = slugify(this.name, { lower: true });
   }
 });

@@ -90,7 +90,8 @@ export class AuthService {
     };
 
     const accessToken = await this.securityService.generateAccessToken(payload);
-    const refreshToken = await this.securityService.generateRefreshToken(payload);
+    const refreshToken =
+      await this.securityService.generateRefreshToken(payload);
 
     return {
       message: 'User logged in successfully',
@@ -108,7 +109,8 @@ export class AuthService {
     };
 
     const accessToken = await this.securityService.generateAccessToken(payload);
-    const refreshToken = await this.securityService.generateRefreshToken(payload);
+    const refreshToken =
+      await this.securityService.generateRefreshToken(payload);
 
     return {
       message: 'Tokens refreshed successfully',

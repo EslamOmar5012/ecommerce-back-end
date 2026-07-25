@@ -29,8 +29,8 @@ export class CloudinaryService {
    */
   buildPublicId(folder: string, userId: string, originalName: string): string {
     const nameWithoutExt = originalName
-      .replace(extname(originalName), '')        // strip extension
-      .replace(/[^a-zA-Z0-9_-]/g, '_')          // sanitize special chars
+      .replace(extname(originalName), '') // strip extension
+      .replace(/[^a-zA-Z0-9_-]/g, '_') // sanitize special chars
       .toLowerCase();
     return `${folder}/${userId}/${nameWithoutExt}`;
   }

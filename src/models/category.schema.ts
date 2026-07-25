@@ -54,6 +54,6 @@ export const CategorySchema = SchemaFactory.createForClass(Category);
 // Auto-generate slug from name before saving
 CategorySchema.pre('save', function () {
   if (this.isModified('name') || this.isNew) {
-    this.slug = slugify(this.name as string, { lower: true });
+    this.slug = slugify(this.name, { lower: true });
   }
 });

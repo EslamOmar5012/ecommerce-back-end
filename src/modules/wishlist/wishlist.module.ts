@@ -1,0 +1,12 @@
+import { Module } from '@nestjs/common';
+import { WishlistService } from './wishlist.service';
+import { WishlistController } from './wishlist.controller';
+import { ProductModule } from '../product/product.module';
+
+@Module({
+  imports: [ProductModule],
+  controllers: [WishlistController],
+  providers: [WishlistService],
+  exports: [WishlistService],
+})
+export class WishlistModule {}

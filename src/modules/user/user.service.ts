@@ -94,7 +94,10 @@ export class UserService {
   }
 
   async updateUserRole(id: string, role: Role) {
-    const user = await this.userRepository.findOne({ _id: id, deletedAt: null });
+    const user = await this.userRepository.findOne({
+      _id: id,
+      deletedAt: null,
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -113,7 +116,10 @@ export class UserService {
   }
 
   async deleteUser(id: string) {
-    const user = await this.userRepository.findOne({ _id: id, deletedAt: null });
+    const user = await this.userRepository.findOne({
+      _id: id,
+      deletedAt: null,
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }

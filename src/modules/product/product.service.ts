@@ -132,7 +132,7 @@ export class ProductService {
     const product = await this.productRepository.findOne(
       { _id: id, deletedAt: null },
       undefined,
-      { populate: ['category', 'subCategory', 'brand'] } as any,
+      { populate: ['category', 'subCategory', 'brand'] },
     );
     if (!product) throw new NotFoundException('Product not found');
 
@@ -157,31 +157,48 @@ export class ProductService {
     const targetSubCategory = dto.subCategory ?? product.subCategory.toString();
 
     if (dto.category) {
-      const exists = await this.categoryRepository.exists({ _id: dto.category, deletedAt: null });
+      const exists = await this.categoryRepository.exists({
+        _id: dto.category,
+        deletedAt: null,
+      });
       if (!exists) throw new NotFoundException('Category not found');
     }
 
     if (dto.subCategory) {
-      const subcategory = await this.subcategoryRepository.findOne({ _id: dto.subCategory, deletedAt: null });
+      const subcategory = await this.subcategoryRepository.findOne({
+        _id: dto.subCategory,
+        deletedAt: null,
+      });
       if (!subcategory) throw new NotFoundException('Subcategory not found');
       if (subcategory.categoryId.toString() !== targetCategory) {
-        throw new BadRequestException('Subcategory does not belong to the specified category');
+        throw new BadRequestException(
+          'Subcategory does not belong to the specified category',
+        );
       }
     } else if (dto.category && targetSubCategory) {
-      const subcategory = await this.subcategoryRepository.findOne({ _id: targetSubCategory, deletedAt: null });
+      const subcategory = await this.subcategoryRepository.findOne({
+        _id: targetSubCategory,
+        deletedAt: null,
+      });
       if (subcategory && subcategory.categoryId.toString() !== dto.category) {
-        throw new BadRequestException('Existing subcategory does not belong to the new category');
+        throw new BadRequestException(
+          'Existing subcategory does not belong to the new category',
+        );
       }
     }
 
     if (dto.brand) {
-      const exists = await this.brandRepository.exists({ _id: dto.brand, deletedAt: null });
+      const exists = await this.brandRepository.exists({
+        _id: dto.brand,
+        deletedAt: null,
+      });
       if (!exists) throw new NotFoundException('Brand not found');
     }
 
     if (dto.name && dto.name !== product.name) {
       const nameExists = await this.productRepository.nameExists(dto.name);
-      if (nameExists) throw new ConflictException('Product name already exists');
+      if (nameExists)
+        throw new ConflictException('Product name already exists');
     }
 
     // Append new gallery images
@@ -215,7 +232,7 @@ export class ProductService {
     const updated = await this.productRepository.updateById(id, updateData, {
       new: true,
       populate: ['category', 'subCategory', 'brand'],
-    } as any);
+    });
 
     return {
       message: 'Product updated successfully',

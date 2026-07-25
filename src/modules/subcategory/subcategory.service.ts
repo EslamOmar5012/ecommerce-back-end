@@ -95,7 +95,7 @@ export class SubcategoryService {
     const subcategory = await this.subcategoryRepository.findOne(
       { _id: id, deletedAt: null },
       undefined,
-      { populate: 'categoryId' } as any,
+      { populate: 'categoryId' },
     );
     if (!subcategory) {
       throw new NotFoundException('Subcategory not found');
@@ -120,7 +120,10 @@ export class SubcategoryService {
       throw new NotFoundException('Subcategory not found');
     }
 
-    if (dto.categoryId && dto.categoryId !== subcategory.categoryId.toString()) {
+    if (
+      dto.categoryId &&
+      dto.categoryId !== subcategory.categoryId.toString()
+    ) {
       const categoryExists = await this.categoryRepository.exists({
         _id: dto.categoryId,
         deletedAt: null,
@@ -154,7 +157,7 @@ export class SubcategoryService {
     const updated = await this.subcategoryRepository.updateById(
       id,
       updateData,
-      { new: true, populate: 'categoryId' } as any,
+      { new: true, populate: 'categoryId' },
     );
 
     return {

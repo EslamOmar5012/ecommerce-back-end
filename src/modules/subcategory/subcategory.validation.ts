@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+const objectIdRegex = /^[0-9a-fA-F]{24}$/;
+
+const zOptionalBoolean = z.preprocess((val) => {
+  if (typeof val === 'string') {
+    if (val.toLowerCase() === 'true') return true;
+    if (val.toLowerCase() === 'false') return false;
+  }
+  return val;
+}, z.boolean().optional());
+
 export const createSubcategorySchema = {
   body: z.object({
     name: z
@@ -7,8 +17,8 @@ export const createSubcategorySchema = {
       .min(2, 'Name must be at least 2 characters')
       .max(100, 'Name must be at most 100 characters')
       .trim(),
-    categoryId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Category ID'),
-    isActive: z.boolean().optional(),
+    categoryId: z.string().regex(objectIdRegex, 'Invalid Category ID'),
+    isActive: zOptionalBoolean,
   }),
 };
 
@@ -22,11 +32,15 @@ export const updateSubcategorySchema = {
       .optional(),
     categoryId: z
       .string()
-      .regex(/^[0-9a-fA-F]{24}$/, 'Invalid Category ID')
+      .regex(objectIdRegex, 'Invalid Category ID')
       .optional(),
-    isActive: z.boolean().optional(),
+    isActive: zOptionalBoolean,
   }),
 };
 
-export type CreateSubcategoryDto = z.infer<typeof createSubcategorySchema.body>;
-export type UpdateSubcategoryDto = z.infer<typeof updateSubcategorySchema.body>;
+export type CreateSubcategoryDto = z.infer<
+  typeof createSubcategorySchema.body
+>;
+export type UpdateSubcategoryDto = z.infer<
+  typeof updateSubcategorySchema.body
+>;

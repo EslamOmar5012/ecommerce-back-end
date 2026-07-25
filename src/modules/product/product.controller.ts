@@ -59,10 +59,7 @@ export class ProductController {
   @Delete(':id/gallery')
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ADMIN)
-  removeGalleryImage(
-    @Param('id') id: string,
-    @Query('url') imageUrl: string,
-  ) {
+  removeGalleryImage(@Param('id') id: string, @Query('url') imageUrl: string) {
     return this.productService.removeGalleryImage(id, imageUrl);
   }
 

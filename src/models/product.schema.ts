@@ -133,6 +133,12 @@ export class Product {
 
 export const ProductSchema = SchemaFactory.createForClass(Product);
 
+// Indexes for high performance searching and filtering
+ProductSchema.index({ name: 'text', description: 'text' });
+ProductSchema.index({ category: 1, isActive: 1, deletedAt: 1 });
+ProductSchema.index({ brand: 1, isActive: 1, deletedAt: 1 });
+ProductSchema.index({ price: 1, createdAt: -1 });
+
 // Auto-generate slug and calculate price after discount before saving
 ProductSchema.pre('save', function () {
   if (this.isModified('name') || this.isNew) {
@@ -146,7 +152,10 @@ ProductSchema.pre('save', function () {
 
   if (discountVal > 0) {
     if (discountType === DiscountEnum.PERCENTAGE) {
-      this.priceAfterDiscount = Math.max(0, price - (price * discountVal) / 100);
+      this.priceAfterDiscount = Math.max(
+        0,
+        price - (price * discountVal) / 100,
+      );
     } else if (discountType === DiscountEnum.FIXED) {
       this.priceAfterDiscount = Math.max(0, price - discountVal);
     }

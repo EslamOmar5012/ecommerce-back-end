@@ -74,13 +74,15 @@ export abstract class DbRepo<T> {
 
     let query = this.model
       .find(queryFilter)
-      .sort(sortObj as any)
+      .sort(sortObj)
       .skip(skip)
       .limit(limit);
 
     if (opts.populate) {
       if (Array.isArray(opts.populate)) {
-        opts.populate.forEach((p) => { query = query.populate(p) as any; });
+        opts.populate.forEach((p) => {
+          query = query.populate(p) as any;
+        });
       } else {
         query = query.populate(opts.populate) as any;
       }

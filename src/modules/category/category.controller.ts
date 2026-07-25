@@ -26,7 +26,10 @@ import {
   createCategorySchema,
   updateCategorySchema,
 } from './category.validation';
-import type { CreateCategoryDto, UpdateCategoryDto } from './category.validation';
+import type {
+  CreateCategoryDto,
+  UpdateCategoryDto,
+} from './category.validation';
 
 @Controller('categories')
 export class CategoryController {
@@ -45,7 +48,11 @@ export class CategoryController {
     @UploadedFile(new FileValidationPipe({ required: false }))
     imageFile: Express.Multer.File,
   ) {
-    return this.categoryService.createCategory(dto, user._id.toString(), imageFile);
+    return this.categoryService.createCategory(
+      dto,
+      user._id.toString(),
+      imageFile,
+    );
   }
 
   @Patch(':id')

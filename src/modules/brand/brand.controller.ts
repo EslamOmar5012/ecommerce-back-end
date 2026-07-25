@@ -36,7 +36,10 @@ export class BrandController {
   @Roles(Role.ADMIN)
   @UseInterceptors(
     FileFieldsInterceptor(
-      [{ name: 'image', maxCount: 1 }, { name: 'logo', maxCount: 1 }],
+      [
+        { name: 'image', maxCount: 1 },
+        { name: 'logo', maxCount: 1 },
+      ],
       memoryStorageOptions(),
     ),
   )
@@ -61,7 +64,10 @@ export class BrandController {
   @Roles(Role.ADMIN)
   @UseInterceptors(
     FileFieldsInterceptor(
-      [{ name: 'image', maxCount: 1 }, { name: 'logo', maxCount: 1 }],
+      [
+        { name: 'image', maxCount: 1 },
+        { name: 'logo', maxCount: 1 },
+      ],
       memoryStorageOptions(),
     ),
   )

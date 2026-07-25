@@ -3,6 +3,22 @@ import { DiscountEnum } from '../../common/enums/product.enum';
 
 const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
+const zOptionalBoolean = z.preprocess((val) => {
+  if (typeof val === 'string') {
+    if (val.toLowerCase() === 'true') return true;
+    if (val.toLowerCase() === 'false') return false;
+  }
+  return val;
+}, z.boolean().optional());
+
+const zNumber = z.preprocess((val) => {
+  if (typeof val === 'string' && val.trim() !== '') {
+    const num = Number(val);
+    if (!isNaN(num)) return num;
+  }
+  return val;
+}, z.number());
+
 export const createProductSchema = {
   body: z.object({
     name: z
@@ -14,18 +30,20 @@ export const createProductSchema = {
       .string()
       .min(10, 'Description must be at least 10 characters')
       .trim(),
-    price: z.number().min(0, 'Price cannot be negative'),
-    stock: z.number().int().min(0, 'Stock cannot be negative'),
+    price: zNumber.pipe(z.number().min(0, 'Price cannot be negative')),
+    stock: zNumber.pipe(z.number().int().min(0, 'Stock cannot be negative')),
     discount: z
       .object({
-        discount: z.number().min(0, 'Discount value cannot be negative'),
+        discount: zNumber.pipe(
+          z.number().min(0, 'Discount value cannot be negative'),
+        ),
         type: z.enum([DiscountEnum.PERCENTAGE, DiscountEnum.FIXED]),
       })
       .optional(),
     category: z.string().regex(objectIdRegex, 'Invalid Category ID'),
     subCategory: z.string().regex(objectIdRegex, 'Invalid Subcategory ID'),
     brand: z.string().regex(objectIdRegex, 'Invalid Brand ID'),
-    isActive: z.boolean().optional(),
+    isActive: zOptionalBoolean,
   }),
 };
 
@@ -42,21 +60,30 @@ export const updateProductSchema = {
       .min(10, 'Description must be at least 10 characters')
       .trim()
       .optional(),
-    price: z.number().min(0, 'Price cannot be negative').optional(),
-    stock: z.number().int().min(0, 'Stock cannot be negative').optional(),
+    price: zNumber
+      .pipe(z.number().min(0, 'Price cannot be negative'))
+      .optional(),
+    stock: zNumber
+      .pipe(z.number().int().min(0, 'Stock cannot be negative'))
+      .optional(),
     discount: z
       .object({
-        discount: z.number().min(0, 'Discount value cannot be negative'),
+        discount: zNumber.pipe(
+          z.number().min(0, 'Discount value cannot be negative'),
+        ),
         type: z.enum([DiscountEnum.PERCENTAGE, DiscountEnum.FIXED]),
       })
       .optional(),
-    category: z.string().regex(objectIdRegex, 'Invalid Category ID').optional(),
+    category: z
+      .string()
+      .regex(objectIdRegex, 'Invalid Category ID')
+      .optional(),
     subCategory: z
       .string()
       .regex(objectIdRegex, 'Invalid Subcategory ID')
       .optional(),
     brand: z.string().regex(objectIdRegex, 'Invalid Brand ID').optional(),
-    isActive: z.boolean().optional(),
+    isActive: zOptionalBoolean,
   }),
 };
 

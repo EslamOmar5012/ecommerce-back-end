@@ -1,5 +1,13 @@
 import { z } from 'zod';
 
+const zOptionalBoolean = z.preprocess((val) => {
+  if (typeof val === 'string') {
+    if (val.toLowerCase() === 'true') return true;
+    if (val.toLowerCase() === 'false') return false;
+  }
+  return val;
+}, z.boolean().optional());
+
 export const createBrandSchema = {
   body: z.object({
     name: z
@@ -7,7 +15,7 @@ export const createBrandSchema = {
       .min(2, 'Name must be at least 2 characters')
       .max(100, 'Name must be at most 100 characters')
       .trim(),
-    isActive: z.boolean().optional(),
+    isActive: zOptionalBoolean,
   }),
 };
 
@@ -19,7 +27,7 @@ export const updateBrandSchema = {
       .max(100, 'Name must be at most 100 characters')
       .trim()
       .optional(),
-    isActive: z.boolean().optional(),
+    isActive: zOptionalBoolean,
   }),
 };
 

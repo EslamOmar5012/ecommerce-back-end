@@ -18,7 +18,9 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const authHeader = request.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new UnauthorizedException('Authorization header is missing or invalid');
+      throw new UnauthorizedException(
+        'Authorization header is missing or invalid',
+      );
     }
 
     const token = authHeader.split(' ')[1];

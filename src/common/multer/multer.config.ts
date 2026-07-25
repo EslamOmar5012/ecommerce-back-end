@@ -12,7 +12,11 @@ import * as crypto from 'crypto';
 export const diskStorageOptions = (opts: { destination?: string } = {}) => ({
   storage: diskStorage({
     destination: opts.destination ?? 'uploads',
-    filename: (_req: any, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
+    filename: (
+      _req: any,
+      file: Express.Multer.File,
+      cb: (error: Error | null, filename: string) => void,
+    ) => {
       const uniqueName = `${crypto.randomUUID()}${extname(file.originalname)}`;
       cb(null, uniqueName);
     },
