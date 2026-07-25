@@ -1,51 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
-  private readonly transporter: nodemailer.Transporter;
+  private readonly resend: Resend;
 
   constructor(private readonly configService: ConfigService) {
-    const user = this.getConfigValue('EMAIL_USER');
-    const pass = this.getConfigValue('EMAIL_PASS');
-
-    const smtpHost = this.getConfigValue('SMTP_HOST');
-    const smtpPort = this.getConfigValue('SMTP_PORT');
-    const smtpSecure = this.getConfigValue('SMTP_SECURE');
-    const smtpRequireTls = this.getConfigValue('SMTP_REQUIRE_TLS');
-
-    const transportConfig: any = {
-      auth: {
-        user,
-        pass,
-      },
-      family: 4,
-    };
-
-    if (smtpHost) {
-      transportConfig.host = smtpHost;
-      transportConfig.port = smtpPort ? Number(smtpPort) : 587;
-      transportConfig.secure = smtpSecure === undefined || smtpSecure === '' ? false : smtpSecure === 'true';
-      transportConfig.requireTLS = smtpRequireTls === undefined || smtpRequireTls === '' ? true : smtpRequireTls === 'true';
-      transportConfig.debug = true;
-    } else {
-      transportConfig.service = 'gmail';
-      transportConfig.host = 'smtp.gmail.com';
-      transportConfig.port = 587;
-      transportConfig.secure = false;
-      transportConfig.requireTLS = true;
-      transportConfig.debug = true;
-    }
-
-    if (!user || !pass) {
-      this.logger.warn(
-        'Email credentials are not configured. Mail delivery will fail until EMAIL_USER and EMAIL_PASS are set.',
-      );
-    }
-
-    this.transporter = nodemailer.createTransport(transportConfig);
+    const apiKey = this.getConfigValue('RESEND_API_KEY');
+    this.resend = new Resend(apiKey);
   }
 
   private getConfigValue(key: string): string {
@@ -132,7 +96,7 @@ export class MailService {
       <body>
         <div class="container">
           <div class="header">
-            <h1>Route E-Commerce</h1>
+            <h1>Xeno E-commerce</h1>
           </div>
           <div class="content">
             <h2>${title}</h2>
@@ -154,14 +118,14 @@ export class MailService {
   }
 
   async sendMail(to: string, subject: string, html: string): Promise<void> {
-    const fromVal =
-      this.configService.get<string>('EMAIL_FROM') ||
-      'Route Ecommerce <eslam.O.elkhabery@gmail.com>';
-    const cleanFrom = fromVal.replace(/^["']|["']$/g, '');
+    const from =
+      this.getConfigValue('EMAIL_FROM') ||
+      'Route Ecommerce <onboarding@resend.dev>';
+
     try {
-      await this.transporter.sendMail({
-        from: cleanFrom,
-        to,
+      await this.resend.emails.send({
+        from,
+        to: [to],
         subject,
         html,
       });
