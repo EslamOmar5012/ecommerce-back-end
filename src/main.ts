@@ -12,23 +12,15 @@ async function bootstrap() {
   app.use(helmet({ contentSecurityPolicy: false }));
 
   // CORS Configuration
-  const allowedOrigins = (
-    configService.get('CORS_ORIGINS') ||
-    'http://localhost:5173,http://localhost:3000,http://localhost:3001'
-  )
-    .split(',')
-    .map((origin) => origin.trim());
+  const corsOrigins = configService.get('CORS_ORIGINS') || 'http://localhost:5173,http://localhost:3000,http://localhost:3001';
+  const allowedOrigins = corsOrigins.split(',').map((origin) => origin.trim());
+  
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 200,
   });
 
   // Swagger OpenAPI Setup
