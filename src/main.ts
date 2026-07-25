@@ -20,17 +20,12 @@ async function bootstrap() {
   ];
 
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error('Not allowed by CORS'));
-    },
+    origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   // Swagger OpenAPI Setup
@@ -56,10 +51,26 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = parseInt(process.env.PORT ?? '3000', 10);
-  await app.listen(port, '0.0.0.0'); // '0.0.0.0' binds to all interfaces (required on Railway)
-  console.log(`🚀 Server running on port ${port}`);
-  console.log(`📚 Swagger Documentation at http://localhost:${port}/api/docs`);
+  const requestedPort = Number.parseInt(process.env.PORT ?? '3000', 10);
+  const host = process.env.HOST ?? '0.0.0.0';
+  const fallbackPort = requestedPort === 3000 ? 3001 : requestedPort + 1;
+
+  try {
+    await app.listen(requestedPort, host);
+    console.log(`🚀 Server running on port ${requestedPort}`);
+    console.log(`📚 Swagger Documentation at http://localhost:${requestedPort}/api/docs`);
+  } catch (error: any) {
+    if (error?.code === 'EADDRINUSE') {
+      console.warn(
+        `Port ${requestedPort} is busy, retrying on ${fallbackPort}`,
+      );
+      await app.listen(fallbackPort, host);
+      console.log(`🚀 Server running on port ${fallbackPort}`);
+      console.log(`📚 Swagger Documentation at http://localhost:${fallbackPort}/api/docs`);
+    } else {
+      throw error;
+    }
+  }
 }
 bootstrap().catch((err) => {
   console.error(err);
