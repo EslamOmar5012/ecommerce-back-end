@@ -10,6 +10,7 @@ async function bootstrap() {
 
   // Security Middlewares
   app.use(helmet({ contentSecurityPolicy: false }));
+  app.enableCors();
 
   const allowedOrigins = [
     'https://ecommerce-front-end-weld.vercel.app',
