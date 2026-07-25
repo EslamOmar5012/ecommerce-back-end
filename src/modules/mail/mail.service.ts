@@ -107,7 +107,7 @@ export class MailService {
             <p style="font-size: 14px; color: #ef4444; font-weight: 500;">Note: This verification code is valid for 10 minutes. Please do not share this OTP with anyone.</p>
           </div>
           <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} Route E-Commerce. All rights reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} Xeno E-Commerce. All rights reserved.</p>
             <p>If you did not request this, please ignore this email.</p>
           </div>
         </div>
@@ -127,7 +127,9 @@ export class MailService {
         html,
       });
 
-      this.logger.log(`SendGrid accepted the email request for ${to}: ${JSON.stringify(response)}`);
+      this.logger.log(
+        `SendGrid accepted the email request for ${to}: ${JSON.stringify(response)}`,
+      );
     } catch (error) {
       this.logger.error(`Email delivery failed to ${to}`, error);
       throw error;
