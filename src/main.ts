@@ -56,9 +56,11 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, document);
 
-  const port = parseInt(process.env.PORT ?? '3000', 10);
-  await app.listen(port, '0.0.0.0'); // '0.0.0.0' binds to all interfaces (required on Railway)
-  console.log(`🚀 Server running on port ${port}`);
+  const port = Number.parseInt(process.env.PORT ?? '3000', 10);
+  const host = process.env.HOST ?? '0.0.0.0';
+
+  await app.listen(port, host);
+  console.log(`🚀 Server running on host ${host} and port ${port}`);
   console.log(`📚 Swagger Documentation at http://localhost:${port}/api/docs`);
 }
 bootstrap().catch((err) => {
