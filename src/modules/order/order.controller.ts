@@ -57,6 +57,27 @@ export class OrderController {
     return this.orderService.handlePaymobWebhook(body, hmacSignature);
   }
 
+  @Get('admin/all')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  getAllOrders(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('status') status?: string,
+    @Query('paymentStatus') paymentStatus?: string,
+    @Query('sortBy') sortBy?: string,
+    @Query('order') order?: string,
+  ) {
+    return this.orderService.getAllOrders({
+      page: page ? parseInt(page) : 1,
+      limit: limit ? parseInt(limit) : 10,
+      status,
+      paymentStatus,
+      sortBy: sortBy || 'createdAt',
+      order: order === 'asc' ? 'asc' : 'desc',
+    });
+  }
+
   @Get('my-orders')
   @UseGuards(AuthGuard)
   getMyOrders(@CurrentUser() user: any) {

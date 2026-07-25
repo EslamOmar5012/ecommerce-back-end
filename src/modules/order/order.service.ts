@@ -410,6 +410,43 @@ export class OrderService {
     };
   }
 
+  async getAllOrders(filters: {
+    page: number;
+    limit: number;
+    status?: string;
+    paymentStatus?: string;
+    sortBy?: string;
+    order?: string;
+  }) {
+    // Build the filter object
+    const queryFilter: any = {};
+    
+    if (filters.status) {
+      queryFilter.status = filters.status;
+    }
+    if (filters.paymentStatus) {
+      queryFilter.paymentStatus = filters.paymentStatus;
+    }
+
+    // Build sort object
+    const sortObj: Record<string, 1 | -1> = {};
+    const sortBy = filters.sortBy || 'createdAt';
+    const order = filters.order === 'asc' ? 1 : -1;
+    sortObj[sortBy] = order;
+
+    const result = await this.orderRepository.findPaginated(queryFilter, {
+      page: filters.page,
+      limit: filters.limit,
+      sort: sortObj,
+    });
+
+    return {
+      message: 'All orders retrieved successfully',
+      data: result.data,
+      pagination: result.pagination,
+    };
+  }
+
   async getOrderById(userId: string, userRole: Role, orderId: string) {
     const order = await this.orderRepository.findById(orderId);
     if (!order) {
