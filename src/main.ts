@@ -10,7 +10,7 @@ async function bootstrap() {
 
   // Security Middlewares
   app.use(helmet({ contentSecurityPolicy: false }));
-  app.enableCors();
+  app.enableCors({ origin: true });
 
   // Swagger OpenAPI Setup
   const swaggerConfig = new DocumentBuilder()
