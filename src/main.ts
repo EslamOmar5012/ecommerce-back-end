@@ -12,25 +12,8 @@ async function bootstrap() {
   app.use(helmet({ contentSecurityPolicy: false }));
 
   // CORS Configuration
-  const corsOrigins = configService.get('CORS_ORIGINS') || 'http://localhost:5173,http://localhost:3000,http://localhost:3001,https://ecommerce-front-end-weld.vercel.app';
-  const allowedOrigins = corsOrigins.split(',').map((origin) => origin.trim());
-  
   app.enableCors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) {
-        return callback(null, true);
-      }
-      
-      // Check if origin is in allowed list
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.warn(`CORS request from blocked origin: ${origin}`);
-        console.warn(`Allowed origins: ${allowedOrigins.join(', ')}`);
-        callback(null, true); // Allow anyway for now - remove this line for production security
-      }
-    },
+    origin: true, // Allow all origins temporarily for debugging
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
