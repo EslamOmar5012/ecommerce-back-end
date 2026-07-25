@@ -14,21 +14,29 @@ export class MailService {
     const smtpHost = this.getConfigValue('SMTP_HOST');
     const smtpPort = this.getConfigValue('SMTP_PORT');
     const smtpSecure = this.getConfigValue('SMTP_SECURE');
+    const smtpRequireTls = this.getConfigValue('SMTP_REQUIRE_TLS');
 
     const transportConfig: any = {
       auth: {
         user,
         pass,
       },
+      family: 4,
     };
 
     if (smtpHost) {
       transportConfig.host = smtpHost;
       transportConfig.port = smtpPort ? Number(smtpPort) : 587;
-      transportConfig.secure =
-        smtpSecure === undefined ? false : smtpSecure === 'true';
+      transportConfig.secure = smtpSecure === undefined || smtpSecure === '' ? false : smtpSecure === 'true';
+      transportConfig.requireTLS = smtpRequireTls === undefined || smtpRequireTls === '' ? true : smtpRequireTls === 'true';
+      transportConfig.debug = true;
     } else {
       transportConfig.service = 'gmail';
+      transportConfig.host = 'smtp.gmail.com';
+      transportConfig.port = 587;
+      transportConfig.secure = false;
+      transportConfig.requireTLS = true;
+      transportConfig.debug = true;
     }
 
     if (!user || !pass) {
@@ -159,7 +167,7 @@ export class MailService {
       });
       this.logger.log(`Email sent successfully to ${to}`);
     } catch (error) {
-      this.logger.error(`Failed to send email to ${to}`, error);
+      this.logger.error(`Email delivery failed to ${to}`, error);
       throw error;
     }
   }
