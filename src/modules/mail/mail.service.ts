@@ -1,15 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Resend } from 'resend';
+import sgMail from '@sendgrid/mail';
 
 @Injectable()
 export class MailService {
   private readonly logger = new Logger(MailService.name);
-  private readonly resend: Resend;
 
   constructor(private readonly configService: ConfigService) {
-    const apiKey = this.getConfigValue('RESEND_API_KEY');
-    this.resend = new Resend(apiKey);
+    const apiKey = this.getConfigValue('SENDGRID_API_KEY');
+    sgMail.setApiKey(apiKey);
   }
 
   private getConfigValue(key: string): string {
@@ -118,18 +117,17 @@ export class MailService {
   }
 
   async sendMail(to: string, subject: string, html: string): Promise<void> {
-    const from =
-      this.getConfigValue('EMAIL_FROM') ||
-      'Route Ecommerce <onboarding@resend.dev>';
+    const from = this.getConfigValue('EMAIL_FROM') || 'no-reply@example.com';
 
     try {
-      await this.resend.emails.send({
+      const response = await sgMail.send({
+        to,
         from,
-        to: [to],
         subject,
         html,
       });
-      this.logger.log(`Email sent successfully to ${to}`);
+
+      this.logger.log(`SendGrid accepted the email request for ${to}: ${JSON.stringify(response)}`);
     } catch (error) {
       this.logger.error(`Email delivery failed to ${to}`, error);
       throw error;
