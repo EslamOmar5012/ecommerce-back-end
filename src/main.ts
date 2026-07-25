@@ -14,10 +14,18 @@ async function bootstrap() {
   // CORS Configuration
   const allowedOrigins = (
     configService.get('CORS_ORIGINS') ||
-    'http://localhost:3000,http://localhost:3001'
-  ).split(',');
+    'http://localhost:5173,http://localhost:3000,http://localhost:3001'
+  )
+    .split(',')
+    .map((origin) => origin.trim());
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
