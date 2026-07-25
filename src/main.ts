@@ -12,8 +12,16 @@ async function bootstrap() {
   app.use(helmet({ contentSecurityPolicy: false }));
 
   // CORS Configuration
+  const allowedOrigins = [
+    'https://ecommerce-front-end-weld.vercel.app',
+    'https://ecommerce-front-end-sandy.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ];
+
   app.enableCors({
-    origin: true, // Allow all origins temporarily for debugging
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
