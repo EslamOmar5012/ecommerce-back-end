@@ -19,21 +19,18 @@ async function bootstrap() {
     'http://127.0.0.1:5173',
   ];
 
-  // Use only app.enableCors() - REMOVED the custom middleware
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
+        return;
       }
+
+      callback(new Error('Not allowed by CORS'));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
   // Swagger OpenAPI Setup
