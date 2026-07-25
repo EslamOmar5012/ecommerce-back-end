@@ -8,18 +8,41 @@ export class MailService {
   private readonly transporter: nodemailer.Transporter;
 
   constructor(private readonly configService: ConfigService) {
-    const user = this.configService.get<string>('EMAIL_USER');
-    const cleanUser = user ? user.replace(/^["']|["']$/g, '') : '';
-    const pass = this.configService.get<string>('EMAIL_PASS');
-    const cleanPass = pass ? pass.replace(/^["']|["']$/g, '') : '';
+    const user = this.getConfigValue('EMAIL_USER');
+    const pass = this.getConfigValue('EMAIL_PASS');
 
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
+    const smtpHost = this.getConfigValue('SMTP_HOST');
+    const smtpPort = this.getConfigValue('SMTP_PORT');
+    const smtpSecure = this.getConfigValue('SMTP_SECURE');
+
+    const transportConfig: any = {
       auth: {
-        user: cleanUser,
-        pass: cleanPass,
+        user,
+        pass,
       },
-    });
+    };
+
+    if (smtpHost) {
+      transportConfig.host = smtpHost;
+      transportConfig.port = smtpPort ? Number(smtpPort) : 587;
+      transportConfig.secure =
+        smtpSecure === undefined ? false : smtpSecure === 'true';
+    } else {
+      transportConfig.service = 'gmail';
+    }
+
+    if (!user || !pass) {
+      this.logger.warn(
+        'Email credentials are not configured. Mail delivery will fail until EMAIL_USER and EMAIL_PASS are set.',
+      );
+    }
+
+    this.transporter = nodemailer.createTransport(transportConfig);
+  }
+
+  private getConfigValue(key: string): string {
+    const value = this.configService.get<string>(key);
+    return value ? value.replace(/^['"]|['"]$/g, '') : '';
   }
 
   private getHtmlTemplate(title: string, message: string, otp: string): string {
